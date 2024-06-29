@@ -1,6 +1,8 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const csv = require('csv-parser');
+const fs = require('fs');
 
 const registerUser = async (req, res) => {
   const { username, email, password, department, role, hierarchyValue } = req.body;
@@ -41,6 +43,49 @@ const registerUser = async (req, res) => {
   }
 };
 
+
+const registerUsersFromCSV = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ msg: 'No file uploaded' });
+  }
+
+  const results = [];
+
+  fs.createReadStream(req.file.path)
+    .pipe(csv())
+    .on('data', (data) => results.push(data))
+    .on('end', async () => {
+      try {
+        for (const user of results) {
+          const { username, email, password, department, role, hierarchyValue } = user;
+
+          let user_old = await User.findOne({ email });
+          if (user_old) {
+            continue; // Skip existing users
+          }
+
+          const salt = await bcrypt.genSalt(10);
+          const hashedPassword = await bcrypt.hash(password, salt);
+
+          const newUser = new User({ 
+            username, 
+            email, 
+            password: hashedPassword, 
+            department, 
+            role, 
+            hierarchyValue 
+          });
+
+          await newUser.save();
+        }
+
+        res.status(201).json({ msg: 'Users registered successfully' });
+      } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: 'Server error' });
+      }
+    });
+};
 
 const loginUser = async (req, res) => {
   //console.log('Request body:', req.body); 
@@ -114,5 +159,5 @@ const getUserIdByUsername = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUserById, getUserIdByUsername };
+module.exports = { registerUser, registerUsersFromCSV, loginUser, getUserById, getUserIdByUsername };
 
