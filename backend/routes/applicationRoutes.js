@@ -6,7 +6,7 @@ const {
     deleteApplication,
     getAllApplications,
     approveApplication,
-    rejectApplication,
+    rejectApplication, 
     getApplicationStatus
 } = require('../controllers/applicationController');
 const authMiddleware = require('../middleware/authMiddleware');

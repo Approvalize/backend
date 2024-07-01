@@ -131,6 +131,20 @@ const loginUser = async (req, res) => {
   }
 };
 
+// get all approvers
+const getallApprovers = async (req, res) => {
+  try {
+    const approvers = await User.find({ role: 'approver' }).select('username');
+    const approverList = approvers.map(approver => ({
+      username: approver.username
+    }));
+    res.status(200).json(approverList);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 // Get user by ID
 const getUserById = async (req, res) => {
   try {
@@ -159,5 +173,5 @@ const getUserIdByUsername = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, registerUsersFromCSV, loginUser, getUserById, getUserIdByUsername };
+module.exports = { registerUser, registerUsersFromCSV, loginUser, getUserById, getUserIdByUsername, getallApprovers };
 
