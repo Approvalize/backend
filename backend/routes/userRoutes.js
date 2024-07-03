@@ -7,9 +7,8 @@ const router = express.Router();
 router.post('/register-users', authMiddleware, upload.single('file'), registerUsersFromCSV);
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.get('/getapprovers', authMiddleware, getallApprovers);
-router.get('/:userId', authMiddleware, getUserById);
-router.get('/username/:username/id', authMiddleware, getUserIdByUsername);
-
+router.get('/getapprovers', getallApprovers);
+router.get('/:userId', getUserById);
+router.get('/username/:username/id', getUserIdByUsername);
 
 module.exports = router;

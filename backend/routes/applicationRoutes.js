@@ -12,7 +12,7 @@ const {
 const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
-router.post('/create', authMiddleware, createApplication);
+router.post('/create', createApplication);
 router.get('/:applicationId', authMiddleware, getApplication);
 router.put('/:applicationId', authMiddleware, editApplication);
 router.delete('/:applicationId', authMiddleware, deleteApplication);
