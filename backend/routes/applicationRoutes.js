@@ -16,7 +16,7 @@ router.post('/create', createApplication);
 router.get('/:applicationId', authMiddleware, getApplication);
 router.put('/:applicationId', authMiddleware, editApplication);
 router.delete('/:applicationId', authMiddleware, deleteApplication);
-router.get('/user/:userId', authMiddleware, getAllApplications);
+router.get('/user/:userId',  getAllApplications);
 router.post('/:applicationId/approve', authMiddleware, approveApplication);
 router.post('/:applicationId/reject', authMiddleware, rejectApplication);
 router.get('/:applicationId/status', authMiddleware, getApplicationStatus);

@@ -1,9 +1,65 @@
 const Application = require('../models/application');
 
+// const createApplication = async (req, res) => {
+//   try {
+//     console.log("Request body:", req.body);
+//     const { title, description, approverPath } = req.body;
+//     const creatorId = req.user.id; 
+//     const newApplication = new Application({
+//       title,
+//       description,
+//       approverPath,
+//       creatorId,
+//       currentApproverIndex: 0,
+//     });
+//     await newApplication.save();
+//     res.status(201).json({ success: true, applicationId: newApplication._id });
+//   } catch (err) {
+//     console.error("Error creating application:", err);
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };
+
+
+
+// const createApplication = async (req, res) => {
+//   try {
+//     console.log("Request body:", req.body);
+
+//     const { title, description, approverPath } = req.body;
+
+//     if (!req.user || !req.user.id) {
+//       return res.status(401).json({ success: false, message: 'Unauthorized' });
+//     }
+
+//     const creatorId = req.user.id;
+
+//     const newApplication = new Application({
+//       title,
+//       description,
+//       approverPath,
+//       creatorId,
+//       currentApproverIndex: 0,
+//     });
+
+//     await newApplication.save();
+
+//     res.status(201).json({ success: true, applicationId: newApplication._id });
+//   } catch (err) {
+//     console.error("Error creating application:", err);
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };
+
 const createApplication = async (req, res) => {
   try {
+    console.log("Request body:", req.body);
+
     const { title, description, approverPath } = req.body;
-    const creatorId = req.user.id; 
+
+    // For testing purposes without authentication
+    const creatorId = '667f945ed84007003f3c3bef';
+
     const newApplication = new Application({
       title,
       description,
@@ -11,12 +67,18 @@ const createApplication = async (req, res) => {
       creatorId,
       currentApproverIndex: 0,
     });
+
     await newApplication.save();
+
     res.status(201).json({ success: true, applicationId: newApplication._id });
   } catch (err) {
+    console.error("Error creating application:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+
+
 
 const getApplication = async (req, res) => {
   try {
