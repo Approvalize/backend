@@ -7,8 +7,7 @@ const cors = require('cors');
 
 dotenv.config();
 
-
-connectDB();
+connectDB(); //connects to db
 
 const app = express();
 app.use(express.json());
@@ -19,8 +18,9 @@ app.use(session({
  secret: process.env.SESSION_SECRET,
  resave: true,
  saveUninitialized: true
-}));
+})); //session started
 
+//
 app.use('/api/applications', require('./routes/applicationRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 
