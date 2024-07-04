@@ -88,8 +88,6 @@ const registerUsersFromCSV = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  //console.log('Request body:', req.body); 
-
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -102,11 +100,6 @@ const loginUser = async (req, res) => {
       console.log('User not found');
       return res.status(401).json({ msg: 'Invalid email or password' });
     }
-
-    //console.log('User found:', user);
-
-   //console.log('Provided password:', password);
-    //console.log('Stored hashed password:', user.password);
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
@@ -122,7 +115,7 @@ const loginUser = async (req, res) => {
       { expiresIn: 3600 },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ token, userId: user.id});
       }
     );
   } catch (err) {

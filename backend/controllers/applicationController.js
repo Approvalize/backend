@@ -137,6 +137,20 @@ const getAllApplications = async (req, res) => {
   }
 };
 
+const getAllApplicationsForApprover = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const applications = await Application.find({
+      approverPath: { $elemMatch: { $eq: userId } }
+    });
+
+    res.status(200).json(applications);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
 const approveApplication = async (req, res) => {
   try {
     const application = await Application.findById(req.params.applicationId);
@@ -221,6 +235,7 @@ module.exports = {
   editApplication,
   deleteApplication,
   getAllApplications,
+  getAllApplicationsForApprover,
   approveApplication,
   rejectApplication,
   getApplicationStatus,
