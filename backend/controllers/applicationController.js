@@ -1,4 +1,6 @@
 const Application = require('../models/application');
+const User = require('../models/user');
+
 
 // const createApplication = async (req, res) => {
 //   try {
@@ -53,18 +55,26 @@ const Application = require('../models/application');
 
 const createApplication = async (req, res) => {
   try {
-    console.log("Request body:", req.body);
-
     const { title, description, approverPath } = req.body;
 
     // For testing purposes without authentication
-    const creatorId = '667f945ed84007003f3c3bef';
+    // const creatorId = '667f945ed84007003f3c3bef';
+
+    const creatorId = req.user.id;
+
+    // Create the statusMap using the approverPath
+    const statusMap = new Map();
+    approverPath.forEach(approver => {
+      statusMap.set(approver, 'pending');
+    });
+
+    console.log(statusMap);
 
     const newApplication = new Application({
       title,
       description,
       approverPath,
-      StatusMap: new Map(),//new
+      statusMap, 
       creatorId,
       currentApproverIndex: 0,
     });
@@ -140,58 +150,49 @@ const getAllApplications = async (req, res) => {
 const getAllApplicationsForApprover = async (req, res) => {
   const { userId } = req.params;
 
-  try {
     const applications = await Application.find({
-      approverPath: { $elemMatch: { $eq: userId } }
+      $expr: { $eq: [ { $arrayElemAt: ["$approverPath", "$currentApproverIndex"] }, { $toObjectId: userId } ]}
     });
 
     res.status(200).json(applications);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
-  }
+
 };
 
 const approveApplication = async (req, res) => {
-  try {
     const application = await Application.findById(req.params.applicationId);
     if (!application) {
       return res.status(404).json({ success: false, message: 'Application not found' });
     }
     const approver = req.user.id;
-    if (application.approverPath[application.currentApproverIndex] !== approver) {
+    if (application.approverPath[application.currentApproverIndex].toString() !== approver) {
       return res.status(403).json({ success: false, message: 'Not authorized to approve' });
     }
     application.currentApproverIndex++;
     if (application.currentApproverIndex >= application.approverPath.length) {
-      application.status = 'Approved';
-      application.StatusMap.set(approver.toString(), 'Approved');//new
+      application.status = 'approved';      
     }   
+
+    application.statusMap.set(approver.toString(), 'approved');
 
     await application.save();
     res.json({ success: true, application });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
+    
 };
 
 const rejectApplication = async (req, res) => {
-  try {
     const application = await Application.findById(req.params.applicationId);
     if (!application) {
       return res.status(404).json({ success: false, message: 'Application not found' });
     }
     const approver = req.user.id;
-    if (application.approverPath[application.currentApproverIndex] !== approver) {
+    if (application.approverPath[application.currentApproverIndex].toString() !== approver) {
       return res.status(403).json({ success: false, message: 'Not authorized to reject' });
     }
-    application.status = 'Rejected';
-    application.StatusMap.set(approver.toString(), 'Rejected');//new
+    application.status = 'rejected';
+    application.statusMap.set(approver.toString(), 'rejected');
 
     await application.save();
     res.json({ success: true, application });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
 };
 
 const getApplicationStatus = async (req, res) => {
@@ -208,24 +209,30 @@ const getApplicationStatus = async (req, res) => {
 
 
 //new
-const getApproverStatus = async (req, res) => {
+const getApproversWithStatus = async (req, res) => {
   try {
-    const { applicationId, approverId } = req.params;
-
+    const { applicationId } = req.params;
     const application = await Application.findById(applicationId);
+
     if (!application) {
-      return res.status(404).json({ message: 'Application not found' });
+      return res.status(404).json({ success: false, message: 'Application not found' });
     }
 
-    const status = application.approverStatusMap.get(approverId);
-    if (!status) {
-      return res.status(404).json({ message: 'Approver not found or status not set' });
-    }
+    const approverDetails = await Promise.all(application.approverPath.map(async (approverId, index) => {
 
-    res.status(200).json({ approverId, status });
-  } catch (err) {
-    console.error('Get Approver Status Error:', err);
-    res.status(500).json({ message: 'Server error' });
+        const user = await User.findById(approverId);
+        if (!user) {
+          return `Approver ${index + 1}: Not found, Status: ${application.statusMap.get(approverId.toString()) || 'Unknown'}`;
+        }
+        return `Approver ${index + 1}: ${user.username}, Status: ${application.statusMap.get(approverId.toString()) || 'Unknown'}`;
+
+    }));
+    
+
+    res.status(200).json({ success: true, approvers: approverDetails });
+  } catch (error) {
+    console.error('Error fetching approvers with status:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
@@ -239,5 +246,5 @@ module.exports = {
   approveApplication,
   rejectApplication,
   getApplicationStatus,
-  getApproverStatus
+  getApproversWithStatus
 };

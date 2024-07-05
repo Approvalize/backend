@@ -9,12 +9,12 @@ const {
     approveApplication,
     rejectApplication, 
     getApplicationStatus,
-    getApproverStatus //new
+    getApproversWithStatus
 } = require('../controllers/applicationController');
 const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
-router.post('/create', createApplication);
+router.post('/create', authMiddleware, createApplication);
 router.get('/:applicationId', authMiddleware, getApplication);
 router.put('/:applicationId', authMiddleware, editApplication);
 router.delete('/:applicationId', authMiddleware, deleteApplication);
@@ -23,6 +23,6 @@ router.get('/approver/:userId', getAllApplicationsForApprover);
 router.post('/:applicationId/approve', authMiddleware, approveApplication);
 router.post('/:applicationId/reject', authMiddleware, rejectApplication);
 router.get('/:applicationId/status', authMiddleware, getApplicationStatus);
-router.get('/:applicationId/approver/:approverId/status', getApproverStatus); // New 
+router.get('/:applicationId/mapstatus', getApproversWithStatus); 
 
 module.exports = router;
