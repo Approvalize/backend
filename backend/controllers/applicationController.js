@@ -1,5 +1,6 @@
 const Application = require('../models/application');
 const User = require('../models/user');
+const OpenAI = require('openai');
 
 
 // const createApplication = async (req, res) => {
@@ -57,9 +58,6 @@ const createApplication = async (req, res) => {
   try {
     const { title, description, approverPath } = req.body;
 
-    // For testing purposes without authentication
-    // const creatorId = '667f945ed84007003f3c3bef';
-
     const creatorId = req.user.id;
 
     // Create the statusMap using the approverPath
@@ -67,8 +65,6 @@ const createApplication = async (req, res) => {
     approverPath.forEach(approver => {
       statusMap.set(approver, 'pending');
     });
-
-    console.log(statusMap);
 
     const newApplication = new Application({
       title,
@@ -235,6 +231,8 @@ const getApproversWithStatus = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+
 
 module.exports = {
   createApplication,

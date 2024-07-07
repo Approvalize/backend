@@ -25,4 +25,5 @@ router.post('/:applicationId/reject', authMiddleware, rejectApplication);
 router.get('/:applicationId/status', authMiddleware, getApplicationStatus);
 router.get('/:applicationId/mapstatus', getApproversWithStatus); 
 
+
 module.exports = router;

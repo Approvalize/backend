@@ -4,6 +4,9 @@ const bcrypt = require('bcryptjs');
 const csv = require('csv-parser');
 const fs = require('fs');
 
+
+// Register a new user
+
 const registerUser = async (req, res) => {
   const { username, email, password, department, role, hierarchyValue } = req.body;
   try {
@@ -26,17 +29,7 @@ const registerUser = async (req, res) => {
 
     await user.save();
 
-    const payload = { user: { id: user.id } };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: 3600 },
-      (err, token) => {
-        if (err) throw err;
-        res.status(201).json({ token });
-      }
-    );
+    res.status(201).json({ msg: 'User registered successfully' });
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: 'Server error' });
@@ -48,9 +41,7 @@ const registerUsersFromCSV = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ msg: 'No file uploaded' });
   }
-
   const results = [];
-
   fs.createReadStream(req.file.path)
     .pipe(csv())
     .on('data', (data) => results.push(data))
@@ -58,15 +49,12 @@ const registerUsersFromCSV = async (req, res) => {
       try {
         for (const user of results) {
           const { username, email, password, department, role, hierarchyValue } = user;
-
           let user_old = await User.findOne({ email });
           if (user_old) {
-            continue; // Skip existing users
+            continue; 
           }
-
           const salt = await bcrypt.genSalt(10);
           const hashedPassword = await bcrypt.hash(password, salt);
-
           const newUser = new User({ 
             username, 
             email, 
@@ -75,10 +63,8 @@ const registerUsersFromCSV = async (req, res) => {
             role, 
             hierarchyValue 
           });
-
           await newUser.save();
         }
-
         res.status(201).json({ msg: 'Users registered successfully' });
       } catch (err) {
         console.error(err.message);
@@ -94,21 +80,17 @@ const loginUser = async (req, res) => {
 
     if (!email || !password) {
       return res.status(400).json({ msg: 'Please enter both email and password' });
-    }
-    
+    }    
     if (!user) {
       console.log('User not found');
       return res.status(401).json({ msg: 'Invalid email or password' });
     }
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       console.log('Password does not match');
       return res.status(401).json({ msg: 'Invalid email or password' });
     }
-
     const payload = { user: { id: user.id } };
-
     jwt.sign(
       payload,
       process.env.JWT_SECRET,

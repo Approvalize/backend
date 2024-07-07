@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ['approver', 'student'], required: true },
-  hierarchyValue: { type: Number, enum: [0, 1, 2, 3], required: function() { return this.role === 'approver'; } },
+  hierarchyValue: { type: Number, enum: [0, 1, 2, 3], required: function() { return this.role === 'approver'; } }
 }, {
   timestamps: true,
 });

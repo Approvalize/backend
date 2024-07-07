@@ -20,9 +20,10 @@ app.use(session({
  saveUninitialized: true
 })); //session started
 
-//
+
 app.use('/api/applications', require('./routes/applicationRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/generate', require('./routes/generateRoute'));
 
 app.get("/", (req, res) => {
     res.json({ message: "hi." });
