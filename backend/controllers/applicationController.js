@@ -225,7 +225,7 @@ const getApproversWithStatus = async (req, res) => {
         if (!user) {
           return `Approver ${index + 1}: Not found, Status: ${application.statusMap.get(approverId.toString()) || 'Unknown'}`;
         }
-        return `Approver ${index + 1}: ${user.username}, Status: ${application.statusMap.get(approverId.toString()) || 'Unknown'}`;
+        return ` ${index + 1}. ${user.username} Status: ${application.statusMap.get(approverId.toString()) || 'Unknown'}`;
 
     }));
     
