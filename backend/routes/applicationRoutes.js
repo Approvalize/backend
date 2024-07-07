@@ -9,7 +9,8 @@ const {
     approveApplication,
     rejectApplication, 
     getApplicationStatus,
-    getApproversWithStatus
+    getApproversWithStatus,
+    setrejectmessage
 } = require('../controllers/applicationController');
 const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
@@ -24,6 +25,7 @@ router.post('/:applicationId/approve', authMiddleware, approveApplication);
 router.post('/:applicationId/reject', authMiddleware, rejectApplication);
 router.get('/:applicationId/status', authMiddleware, getApplicationStatus);
 router.get('/:applicationId/mapstatus', getApproversWithStatus); 
+router.put('/rejectmessage/:applicationId', setrejectmessage); 
 
 
 module.exports = router;

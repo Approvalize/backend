@@ -9,7 +9,8 @@ const applicationSchema = new mongoose.Schema({
   currentApproverIndex: { type: Number, default: 0 },
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
   statusMap: { type: Map, of: String, enum: ['approved', 'pending', 'rejected'] },
-  updatedAt: { type: Date, default: Date.now }//new
+  updatedAt: { type: Date, default: Date.now },
+  rejectMessage: { type: String || null, default: null }
 }, {
   timestamps: true,
 });

@@ -208,7 +208,23 @@ const getApplicationStatus = async (req, res) => {
   }
 };
 
+const setrejectmessage = async (req, res) => {
 
+  try {
+    const application = await Application.findById(req.params.applicationId);
+    if (!application) {
+      return res.status(404).json({ success: false, message: 'Application not found' });
+    }
+    const rejectMessage = req.body.rejectMessage;
+    application.rejectMessage = rejectMessage;
+    await application.save();
+    res.json({ success: true, message: "reject message set" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+
+
+};
 //new
 const getApproversWithStatus = async (req, res) => {
   try {
@@ -247,5 +263,6 @@ module.exports = {
   approveApplication,
   rejectApplication,
   getApplicationStatus,
-  getApproversWithStatus
+  getApproversWithStatus,
+  setrejectmessage
 };
