@@ -4,8 +4,7 @@ const OpenAI = require('openai');
 const generateApplication = async (req, res) => {
     try {
       
-      console.log('generateApplication executed');
-  
+      
       const { prompt } = req.body;
   
       if (!process.env.OPENAI_API_KEY) {
@@ -17,12 +16,12 @@ const generateApplication = async (req, res) => {
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
-          { role: "system", content: "You are a helpful assistant who generates letters." },
+          { role: "system", content: "You are a helpful assistant who generates letters. Just respond with the letter and no other text along with it." },
           { role: "user", content: prompt }
         ]      
       });
   
-      res.status(201).json({ success: true, message: response.choices[0].message.content });
+      res.status(201).json({ message: response.choices[0].message.content });
     } catch (err) {
       console.error("Error generating application:", err);
       res.status(500).json({ success: false, message: err.message });

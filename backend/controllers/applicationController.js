@@ -147,7 +147,12 @@ const getAllApplicationsForApprover = async (req, res) => {
   const { userId } = req.params;
 
     const applications = await Application.find({
-      $expr: { $eq: [ { $arrayElemAt: ["$approverPath", "$currentApproverIndex"] }, { $toObjectId: userId } ]}
+      $expr: {
+        $or: [
+          { $eq: [ { $arrayElemAt: ["$approverPath", "$currentApproverIndex"] }, { $toObjectId: userId } ] },
+          { $lt: [ { $indexOfArray: ["$approverPath", { $toObjectId: userId }] }, "$currentApproverIndex" ] }
+        ]
+      }
     });
 
     res.status(200).json(applications);
@@ -231,8 +236,6 @@ const getApproversWithStatus = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
-
 
 module.exports = {
   createApplication,
