@@ -1,13 +1,23 @@
 {
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.3",
+    "@emotion/styled": "^11.11.5",
+    "@headlessui/react": "^2.1.1",
+    "@heroicons/react": "^2.1.4",
+    "@reduxjs/toolkit": "^2.2.6",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.6.2",
-    "mongoose": "^8.4.1"
+    "mongoose": "^8.4.1",
+    "openai": "^4.0.0",
+    "react-redux": "^9.1.2",
+    "redux": "^5.0.1"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "nodemon": "^3.1.3"
   }
 }
