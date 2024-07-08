@@ -225,6 +225,7 @@ const setrejectmessage = async (req, res) => {
 
 
 };
+
 //new
 const getApproversWithStatus = async (req, res) => {
   try {
@@ -235,23 +236,20 @@ const getApproversWithStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Application not found' });
     }
 
-    const approverDetails = await Promise.all(application.approverPath.map(async (approverId, index) => {
-
-        const user = await User.findById(approverId);
-        if (!user) {
-          return `Approver ${index + 1}: Not found, Status: ${application.statusMap.get(approverId.toString()) || 'Unknown'}`;
-        }
-        return ` ${index + 1}. ${user.username} Status: ${application.statusMap.get(approverId.toString()) || 'Unknown'}`;
-
+    const approverDetails = await Promise.all(application.approverPath.map(async (approverId) => {
+      const user = await User.findById(approverId);
+      if (!user) {
+        return { approverId: approverId.toString(), status: application.statusMap.get(approverId.toString()) || 'Unknown' };
+      }
+      return { approverId: user._id.toString(), status: application.statusMap.get(user._id.toString()) || 'Unknown' };
     }));
-    
 
     res.status(200).json({ success: true, approvers: approverDetails });
   } catch (error) {
-    console.error('Error fetching approvers with status:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };
+
 
 module.exports = {
   createApplication,
